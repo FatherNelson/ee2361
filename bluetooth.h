@@ -13,7 +13,6 @@ extern "C" {
 #endif
 
     void setup_uart(void);
-    extern void (*process_function)(char);
 
 #ifdef	__cplusplus
 }

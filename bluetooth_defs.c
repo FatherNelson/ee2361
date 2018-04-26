@@ -1,37 +1,17 @@
 #include "bluetooth.h" 
 #include "p24Fxxxx.h"
 #include "xc.h"
+#include "logic.h"
 
-int STOP;
 
 volatile char i = 0;
 
 void __attribute__((__interrupt__,__auto_psv__)) _U1RXInterrupt(void){ 
     i = U1RXREG;
-    if(!STOP){
-        switch(i){
-            case 'w':
-                forward();
-                break;
-            case 'a':
-                left();
-                break;
-            case 's':
-                reverse();
-                break;
-            case 'd':
-                right();
-                break;
-            case 'x':
-                stop();
-                break;
-        }
-    }
-    if(STOP){
-        stop();
-    }
+    bluetooth_react(i);
     _U1RXIF = 0;
 }
+
 void setup_uart(void){
     TRISBbits.TRISB2 = 0;
     U1MODE = 0x800;
@@ -48,5 +28,4 @@ void setup_uart(void){
     _U1TXIF = 0;
     U1MODE = 0x8000; //TUrn on the uart
 
-    STOP = 0;
 }

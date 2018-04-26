@@ -29,10 +29,13 @@
 #pragma config FCKSM = CSECME      // Clock Switching and Monitor (Clock switching is enabled, 
                                        // Fail-Safe Clock Monitor is enabled)
 #pragma config FNOSC = FRCPLL      // Oscillator Select (Fast RC Oscillator with PLL module (FRCPLL))
+
+
 int main(void) {
     setup_scan();
     setup_motors();
     setup_uart();
+
     while(1){
         
     }
