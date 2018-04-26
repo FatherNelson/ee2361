@@ -7,7 +7,7 @@
 
 #include "xc.h"
 #include "p24Fxxxx.h"
-#include "robot.h"
+#include "motor.h"
 
 //void __attribute__((__interrupt__,__auto_psv__)) _T2Interrupt(void){
 //    _T2IF = 0;

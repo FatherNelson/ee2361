@@ -8,7 +8,7 @@
 
 #include "xc.h"
 #include "p24Fxxxx.h"
-#include "robot.h"
+#include "scanner.h"
 #define TRIG_WIDTH 3759 //Value in PR3 for both trigger signals.
 #define TRIG_PAT 3758
 #define TRIG_PAT1 3756
