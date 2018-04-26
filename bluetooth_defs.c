@@ -1,17 +1,13 @@
 #include "bluetooth.h" 
 #include "p24Fxxxx.h"
 #include "xc.h"
-#include "robot_asm2.h"
+
+int STOP;
+
 volatile char i = 0;
-void delay(int ms){
-    int j = 0;
-    for(j = 0; j<ms; j++){
-        delay_ms();
-    }
-}
+
 void __attribute__((__interrupt__,__auto_psv__)) _U1RXInterrupt(void){ 
     i = U1RXREG;
-    int j = seconds;
     if(!STOP){
         switch(i){
             case 'w':
@@ -51,4 +47,6 @@ void setup_uart(void){
     _U1TXIE = 1;
     _U1TXIF = 0;
     U1MODE = 0x8000; //TUrn on the uart
+
+    STOP = 0;
 }

@@ -18,4 +18,5 @@ extern "C" {
 }
 #endif
 
-#endif	SCANNER_H
+#endif
+

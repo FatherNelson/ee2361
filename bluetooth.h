@@ -13,10 +13,11 @@ extern "C" {
 #endif
 
     void setup_uart(void);
-    void (*process_function)(char);
+    extern void (*process_function)(char);
 
 #ifdef	__cplusplus
 }
 #endif
 
-#endif	BLUETOOTH_H
+#endif
+
