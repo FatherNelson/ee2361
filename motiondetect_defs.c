@@ -245,9 +245,8 @@ void setOutput_left(void){
     }
     else{
         PORTBbits.RB8 = 1;
-        //stop();
         STOP_LEFT = 1;
-        //right();
+        left_tooClose(1);
     }
     reading_pos += 1;
     if(reading_pos == 10){
@@ -289,7 +288,7 @@ void setOutput_rear(void){
         PORTBbits.RB8 = 1;
         //stop();
         STOP_REAR = 1;
-        //forward();
+        rear_tooClose(1);
     }
     reading_pos2 += 1;
     if(reading_pos2 == 10){
@@ -330,7 +329,7 @@ void setOutput_right(void){
         PORTBbits.RB8 = 1;
         //stop();
         STOP_RIGHT = 1;
-        //left();
+        right_tooClose(1);
     }
     reading_pos3 += 1;
     if(reading_pos3 == 10){
