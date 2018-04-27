@@ -1,15 +1,14 @@
 #include "logic.h"
 #include "motors.h"
 
-int STOP;
+char hazard_right = 0;
+char hazard_left = 0;
+char hazard_rear = 0;
 
 void bluetooth_react(char c) {
-    STOP = 0;
-    if(STOP){
-        stop();
-	return;
-    }
-
+    hazard_right = 0;
+    hazard_left = 0;
+    hazard_rear = 0;   
     switch(c){
 	case 'w':
 	    forward();
@@ -28,4 +27,37 @@ void bluetooth_react(char c) {
 	    break;
     }
     return;
+}
+
+void left_tooClose(char c) {
+    if(c) {
+	if(!hazard_left) {
+	    stop();
+	    hazard_left = 1;
+	}
+    } else {
+	hazard_left = 0;
+    }
+}
+
+void right_tooClose(char c) {
+    if(c) {
+	if(!hazard_right) {
+	    stop();
+	    hazard_right = 1;
+	}
+    } else {
+	hazard_right = 0;
+    }
+}
+
+void rear_tooClose(char c) {
+    if(c) {
+	if(!hazard_rear) {
+	    stop();
+	    hazard_rear = 1;
+	}
+    } else {
+	hazard_rear = 0;
+    }
 }
