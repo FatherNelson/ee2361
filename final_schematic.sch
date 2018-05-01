@@ -1867,12 +1867,22 @@ You are welcome to use this library for commercial purposes. For attribution, we
 <wire x1="139.7" y1="137.16" x2="144.78" y2="137.16" width="0.1524" layer="91"/>
 <label x="147.32" y="137.16" size="1.27" layer="95" xref="yes"/>
 </segment>
+<segment>
+<pinref part="U$1" gate="A" pin="PGD1/EMUD1/AN2/C2IN-/RP0/CN4/RB0"/>
+<wire x1="154.94" y1="91.44" x2="165.1" y2="91.44" width="0.1524" layer="91"/>
+<label x="170.18" y="91.44" size="1.27" layer="95" rot="R180" xref="yes"/>
+</segment>
 </net>
 <net name="PGC" class="0">
 <segment>
 <pinref part="U$2" gate="G$1" pin="PGC"/>
 <wire x1="139.7" y1="124.46" x2="144.78" y2="124.46" width="0.1524" layer="91"/>
 <label x="147.32" y="124.46" size="1.27" layer="95" xref="yes"/>
+</segment>
+<segment>
+<pinref part="U$1" gate="A" pin="PGC1/EMUC1/AN3/C2IN+/RP1/CN5/RB1"/>
+<wire x1="154.94" y1="88.9" x2="165.1" y2="88.9" width="0.1524" layer="91"/>
+<label x="170.18" y="88.9" size="1.27" layer="95" rot="R180" xref="yes"/>
 </segment>
 </net>
 <net name="~MCLR" class="0">
@@ -1939,9 +1949,9 @@ You are welcome to use this library for commercial purposes. For attribution, we
 </net>
 <net name="RIGHT_MOT_FORWARD" class="0">
 <segment>
-<pinref part="U$1" gate="A" pin="OSCI/CLKI/CN30/RA2"/>
-<wire x1="17.78" y1="68.58" x2="12.7" y2="68.58" width="0.1524" layer="91"/>
-<label x="-12.7" y="68.58" size="1.27" layer="95" xref="yes"/>
+<pinref part="U$1" gate="A" pin="PGD3/EMUD3/RP5/ASDA1/CN27/PMD7/RB5"/>
+<wire x1="154.94" y1="78.74" x2="165.1" y2="78.74" width="0.1524" layer="91"/>
+<label x="193.04" y="78.74" size="1.27" layer="95" rot="R180" xref="yes"/>
 </segment>
 </net>
 <net name="RIGHT_MOT_REVERSE" class="0">
@@ -1953,9 +1963,9 @@ You are welcome to use this library for commercial purposes. For attribution, we
 </net>
 <net name="LEFT_MOT_FORWARD" class="0">
 <segment>
-<pinref part="U$1" gate="A" pin="SOSCO/T1CK/CN0/PMA1/RA4"/>
-<wire x1="17.78" y1="63.5" x2="15.24" y2="63.5" width="0.1524" layer="91"/>
-<label x="-10.16" y="63.5" size="1.27" layer="95" xref="yes"/>
+<pinref part="U$1" gate="A" pin="SOSCI/RP4/PMBE/CN1/RB4"/>
+<wire x1="154.94" y1="81.28" x2="165.1" y2="81.28" width="0.1524" layer="91"/>
+<label x="193.04" y="81.28" size="1.27" layer="95" rot="R180" xref="yes"/>
 </segment>
 </net>
 <net name="LEFT_MOT_REVERSE" class="0">
@@ -2019,6 +2029,13 @@ You are welcome to use this library for commercial purposes. For attribution, we
 <pinref part="U$1" gate="A" pin="AN12/RP12/CN14/PMD0/RB12"/>
 <wire x1="154.94" y1="60.96" x2="165.1" y2="60.96" width="0.1524" layer="91"/>
 <label x="175.26" y="60.96" size="1.27" layer="95" rot="R180" xref="yes"/>
+</segment>
+</net>
+<net name="SERVO" class="0">
+<segment>
+<pinref part="U$1" gate="A" pin="AN4/C1IN-/RP2/SDA2/CN6/RB2"/>
+<wire x1="154.94" y1="86.36" x2="165.1" y2="86.36" width="0.1524" layer="91"/>
+<label x="172.72" y="86.36" size="1.27" layer="95" rot="R180" xref="yes"/>
 </segment>
 </net>
 </nets>
