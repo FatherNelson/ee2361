@@ -7,9 +7,7 @@
 
 
 #include "xc.h"
-#include "motors.h"
-#include "bluetooth.h"
-#include "scanner.h"
+#include "robot.h"
 
 // PIC24FJ64GA002 Configuration Bit Settings
 // CW1: FLASH CONFIGURATION WORD 1 (see PIC24 Family Reference Manual 24.1)
