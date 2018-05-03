@@ -6,12 +6,6 @@ volatile char i = 0;
 
 static unsigned int userMode = 0;
 
-void delay(int ms){
-    int j = 0;
-    for(j = 0; j<ms; j++){
-        delay_ms();
-    }
-}
 void __attribute__((__interrupt__,__auto_psv__)) _U1RXInterrupt(void){ 
     i = U1RXREG;
     int j = seconds;
