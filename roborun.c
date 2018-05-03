@@ -27,12 +27,14 @@
 #pragma config FCKSM = CSECME      // Clock Switching and Monitor (Clock switching is enabled, 
                                        // Fail-Safe Clock Monitor is enabled)
 #pragma config FNOSC = FRCPLL      // Oscillator Select (Fast RC Oscillator with PLL module (FRCPLL))
+
+//This is the file which sets up the operation of the droid that is driven by ISR's. Must be called, and contains the main function
 int main(void) {
-    setup_scan();
-    setup_motors();
-    setup_uart();
+    setup_scan(); //perform setup for all three sensors and define their connections
+    setup_motors(); //define the connections of the h-bridge and instantiate crucial motor modules (OC's and timers)
+    setup_uart(); //Start uart interpretation by the PIC, allows commands to be processed
     while(1){
-        
+        //Terminate indefinitely, all processing is ISR driven.
     }
     return 0;
 }
