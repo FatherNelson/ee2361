@@ -23,7 +23,7 @@ during the production of version 1*/
 #define NOISE_TOLERANCE 100
 volatile unsigned int T1OV; //current number of overflows on timer one. Used for timing calculation in the external interrupt
 //routines
-volatile unsigned int sent_ov; //number of overflows on timer1 at the time a rising edge is detected. This variable more than
+//volatile unsigned int sent_ov; //number of overflows on timer1 at the time a rising edge is detected. This variable more than
 //likely was the root of errors during testing, will be refactored in future renditions. This simply gives a context of how 
 //many times TMR1 overflowed at the time that 
 
@@ -142,11 +142,11 @@ void __attribute__((__interrupt__,__auto_psv__)) _INT0Interrupt(void){
     //Rising edge is the primary side.
     if(_INT0EP == 0){ //Read the rising edge
         rise = TMR1 + (T1OV * 0xffff); //store the time at rise
-        sent_ov = T1OV; //Store the overflows at rise
+     //   sent_ov = T1OV; //Store the overflows at rise
     }
     else if(_INT0EP == 1){
         fall = TMR1 + (T1OV * 0xffff); //Store the time at fall
-        sent_ov = 0; //Clear time contexts for next pulse
+       // sent_ov = 0; //Clear time contexts for next pulse
         T1OV = 0;
         _INT0IE = 0;
         _INT2IE = 1;
@@ -161,11 +161,11 @@ void __attribute__((__interrupt__,__auto_psv__)) _INT1Interrupt(void){
     //Rising edge is the primary side.
     if(_INT1EP == 0){ //Read for the rise
         sigma = TMR1 + (T1OV * 0xffff); //Time of rising edge
-        sent_ov = T1OV; //Time context of the rising edge
+      //  sent_ov = T1OV; //Time context of the rising edge
     }
     else if(_INT1EP == 1){ //Read for the fall
         delta = TMR1 + (T1OV * 0xffff); //Time of falling edge
-        sent_ov = 0; //Clear time contexts
+       // sent_ov = 0; //Clear time contexts
         T1OV = 0;
         setOutput_rear();
     }
@@ -178,11 +178,11 @@ void __attribute__((__interrupt__,__auto_psv__)) _INT2Interrupt(void){
     //Rising edge is the primary side.
     if(_INT2EP == 0){
         alpha = TMR1 + (T1OV * 0xffff); //Time of rising edge
-        sent_ov = T1OV;
+       // sent_ov = T1OV;
     }
     else if(_INT2EP == 1){
         beta = TMR1 + (T1OV * 0xffff); //Time of falling edge
-        sent_ov = 0; //Clear time contexts
+        //sent_ov = 0; //Clear time contexts
         T1OV = 0;
         _INT0IE = 1;
         _INT2IE = 0;
