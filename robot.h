@@ -22,14 +22,16 @@ extern "C" {
     extern volatile unsigned int seconds; //global time variable that tracks seconds, not pertinent to 1.0, but usable for 
     //runtime statistics in later iterations
     //extern volatile int STOP; //variable to define if currently stopped. Not used in 1.0
-    void setup_motors(void); //define motor connections
-    void forward(void); //drive forward
-    void autoReverse(void); //cruise control forward
-    void autoForward(void); //cruise control rearward     
+    void forward(void); //drive forward    
     void reverse(void); //drive droid in rear direction
     void right(void); //turn the droid to the right
     void left(void); //turn the droid to the left
     void stop(void); //stop the droid
+    
+    void autoReverse(void); //cruise control forward
+    void autoForward(void); //cruise control rearward 
+    
+    void setup_motors(void); //define motor connections
     void setup_scan(void); //Setup the pinout defs for sensors per the definitions in scanner.h
     void setup_uart(void); //Setup the uart pinout definitions per the definitions in bluetooth_defs.c
 
