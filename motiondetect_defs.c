@@ -199,7 +199,7 @@ void setupINT0(void){
     //Turn on the interrupts
     IEC0bits.INT0IE = 1;
     //Set as high priority interrupts
-    IPC0bits.INT0IP = 0b010;
+    //IPC0bits.INT0IP = 0b010;
     //Set edge polarity to rising edges.
     INTCON2bits.INT0EP = 0;
     //Turn off the interrupt flags.
@@ -214,7 +214,7 @@ void setupINT1(void){
     //Turn on the interrupts
   //  IEC1bits.INT1IE = 1;
     //High priority interrupt
-    IPC5bits.INT1IP = 0b011;
+   // IPC5bits.INT1IP = 0b011;
     //Set edge polarity to rising edges.
     INTCON2bits.INT1EP = 0;
     //Turn off the interrupt flags.
@@ -229,7 +229,7 @@ void setupINT2(void){
     //Turn on the interrupts
    // IEC1bits.INT2IE = 1;
     //High priority interrupt
-    IPC7bits.INT2IP = 0b011;
+    //IPC7bits.INT2IP = 0b011;
     //Set edge polarity to rising edges.
     INTCON2bits.INT2EP = 0;
     //Turn off the interrupt flags.
