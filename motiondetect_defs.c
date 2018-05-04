@@ -9,6 +9,10 @@
 #include "xc.h"
 #include "p24Fxxxx.h"
 #include "robot.h"
+/*These choices in TRIG_WIDTH and TRIG_PAT are to establish a 17Hz PWM signal with a 16uS pulse, fitting within
+the bounds of the HC-SR04 which demands a maximum trigger rate of 17Hz and a minimum TTL trigger of 10uS at 5V.
+The names of these constants do not make that abundantly clear, but were the fastest stable choices discovered 
+during the production of version 1*/
 #define TRIG_WIDTH 3759 //Value in PR3 for both trigger signals.
 #define TRIG_PAT 3758 //Duty cycle of OC1. It is one less than TRIG_WIDTH to send the 10uS TTL trigger to the HC-SR04
 #define START 20
@@ -17,8 +21,11 @@
 #define TURNAWAY_DISTANCE 3000
 #define AUTOSTOP_DISTANCE 1500
 #define NOISE_TOLERANCE 100
-volatile unsigned int T1OV; //current number of overflows
-volatile unsigned int sent_ov; //number of overflows at delta
+volatile unsigned int T1OV; //current number of overflows on timer one. Used for timing calculation in the external interrupt
+//routines
+volatile unsigned int sent_ov; //number of overflows on timer1 at the time a rising edge is detected. This variable more than
+//likely was the root of errors during testing, will be refactored in future renditions. This simply gives a context of how 
+//many times TMR1 overflowed at the time that 
 
 volatile int detectFront = 0;
 volatile int detectBack = 0;
@@ -35,7 +42,7 @@ void collisionBack();
 
 
 void __attribute__((__interrupt__,__auto_psv__)) _OC1Interrupt(void){
-    _OC1IF = 0;
+    _OC1IF = 0; //Boilerplate, clear the OC1 interrupt.
 }
 
 int getFrontStatus(){
@@ -46,38 +53,29 @@ int getBackStatus(){
     return detectBack;
 }
 void __attribute__((__interrupt__,__auto_psv__)) _T1Interrupt(void){
-    _T1IF = 0;
-    T1OV += 1;
+    _T1IF = 0; //Boilerplate, clera the interrupt flag
+    T1OV += 1; //Keep track of timer one overflows.
 }
 void __attribute__((__interrupt__,__auto_psv__)) _T3Interrupt(void){
-    _T3IF = 0;
+    _T3IF = 0; //Boilerplate, necessary for operation of peripherals
 }
-volatile unsigned int seconds;
 void __attribute__((__interrupt__,__auto_psv__)) _T5Interrupt(void){
-    T5CONbits.TON = 0;
+    T5CONbits.TON = 0; //Turn off timer5
     _T5IF = 0;
     detectFront = 0;
     detectBack = 0;
 }
 //Trigger Rear
 void setupOC1(void){
-    //Bind OC1 to RP6/RB6
-    //Set timer to have period 20ms
-    //Set to digital and make 6,8,9 outputs
-    TRISBbits.TRISB14 = 0;
-    //TRISB = 0x0000;
+    TRISBbits.TRISB6 = 0;
     AD1PCFG = 0x9fff;
-    T3CONbits.TON = 0;
+    T3CONbits.TON = 0; //Turn off the timer to set it up
     TMR3 = 0;
     T3CONbits.TCKPS1 = 1;
     T3CONbits.TCKPS0 = 1;
-    //Set PR3 to be 20mS, this was before adding clear timers in the int func
-    //and at TCKPS[1:0] = 11
-    //PR3 = 149
-    //Turned RCdiv to right channel
     PR3 = TRIG_WIDTH;
     __builtin_write_OSCCONL(OSCCON & 0xbf); // unlock PPS
-    RPOR3bits.RP6R = 18;  // Use Pin RP12 for Output Compare 1 = "18" (Table 10-3)
+    RPOR3bits.RP6R = 18;  // Use Pin RP6 for Output Compare 1 = "18" (Table 10-3)
     __builtin_write_OSCCONL(OSCCON | 0x40); // lock   PPS
     // Timer 3 setup should happen before this line
     OC1CON = 0;    // turn off OC1 for now
@@ -95,15 +93,15 @@ void setupOC1(void){
 }
 //Output compare timer: Runs at 17Hz
 void setupTMR3(void){
-    T3CONbits.TON = 0;
-    TMR3 = 0;
-    T3CONbits.TCKPS1 = 1;
+    T3CONbits.TON = 0; //Turn on TMR3
+    TMR3 = 0; //Clear TMR3
+    T3CONbits.TCKPS1 = 1; //Set the prescaler to 256
     T3CONbits.TCKPS0 = 1;
-    PR3 = TRIG_WIDTH;
+    PR3 = TRIG_WIDTH; //Give TMR3 the proper width
     _T3IE = 1; // Enable the T3 Interrupt
     T3CONbits.TON = 1;
 }
-volatile unsigned int seconds;
+volatile unsigned int seconds; //Time context
 void setupTMR5(void){
     //Create a one second timer
     T5CONbits.TON = 0;
@@ -120,9 +118,8 @@ void setupTMR5(void){
 //Trigger pulse timer
 
 void setupTMR1(void){
-    //Create a ten micro second timer for the trigger pulses with PR1 = 159.
     //Switched to maximum to prevent overflows and use another function to write
-    //the pulse
+    //the pulse. This timer is used by the external interrupts to keep track of the time for rising and falling edge
     T1CONbits.TON = 0;
     T1CONbits.TCKPS0 = 0;
     T1CONbits.TCKPS1 = 0;
@@ -138,41 +135,41 @@ volatile unsigned long long int delta; //Rising edge
 volatile unsigned long long int sigma; //Falling edge
 volatile unsigned long long int beta; //Falling edge
 volatile unsigned long long int alpha; //Rising edge
-volatile unsigned long long int rise;
-volatile unsigned long long int fall;
+volatile unsigned long long int rise; //Rising edge
+volatile unsigned long long int fall; //Falling edge
 //front right
 void __attribute__((__interrupt__,__auto_psv__)) _INT0Interrupt(void){
     //Rising edge is the primary side.
-    if(_INT0EP == 0){
-        rise = TMR1 + (T1OV * 0xffff);
-        sent_ov = T1OV;
+    if(_INT0EP == 0){ //Read the rising edge
+        rise = TMR1 + (T1OV * 0xffff); //store the time at rise
+        sent_ov = T1OV; //Store the overflows at rise
     }
     else if(_INT0EP == 1){
-        fall = TMR1 + (T1OV * 0xffff);
-        sent_ov = 0;
+        fall = TMR1 + (T1OV * 0xffff); //Store the time at fall
+        sent_ov = 0; //Clear time contexts for next pulse
         T1OV = 0;
         _INT0IE = 0;
         _INT2IE = 1;
         setOutput_right();
         
     }
-    _INT0EP ^= 1;
+    _INT0EP ^= 1;//If you read a rise, read a fall next. Else read a rise next.
     _INT0IF = 0;
 }
 //rear
 void __attribute__((__interrupt__,__auto_psv__)) _INT1Interrupt(void){
     //Rising edge is the primary side.
-    if(_INT1EP == 0){
-        sigma = TMR1 + (T1OV * 0xffff);
-        sent_ov = T1OV;
+    if(_INT1EP == 0){ //Read for the rise
+        sigma = TMR1 + (T1OV * 0xffff); //Time of rising edge
+        sent_ov = T1OV; //Time context of the rising edge
     }
-    else if(_INT1EP == 1){
-        delta = TMR1 + (T1OV * 0xffff);
-        sent_ov = 0;
+    else if(_INT1EP == 1){ //Read for the fall
+        delta = TMR1 + (T1OV * 0xffff); //Time of falling edge
+        sent_ov = 0; //Clear time contexts
         T1OV = 0;
         setOutput_rear();
     }
-    _INT1EP ^= 1;
+    _INT1EP ^= 1; //If you read a rise, read a fall next. Else read a rise next.
     _INT1IE = 1;
     _INT1IF = 0;
 }
@@ -180,24 +177,24 @@ void __attribute__((__interrupt__,__auto_psv__)) _INT1Interrupt(void){
 void __attribute__((__interrupt__,__auto_psv__)) _INT2Interrupt(void){
     //Rising edge is the primary side.
     if(_INT2EP == 0){
-        alpha = TMR1 + (T1OV * 0xffff);
+        alpha = TMR1 + (T1OV * 0xffff); //Time of rising edge
         sent_ov = T1OV;
     }
     else if(_INT2EP == 1){
-        beta = TMR1 + (T1OV * 0xffff);
-        sent_ov = 0;
+        beta = TMR1 + (T1OV * 0xffff); //Time of falling edge
+        sent_ov = 0; //Clear time contexts
         T1OV = 0;
         _INT0IE = 1;
         _INT2IE = 0;
         setOutput_left();
     }
-    _INT2EP ^= 1;
+    _INT2EP ^= 1; //If you read a rise, read a fall next. Else read a rise next.
   //  _INT2IE = 1;
 
     _INT2IF = 0;
 }
-//front right
-void setupINT0(void){
+//front right -- Initialize the module that measures echo pulses from the front right sensor
+void setupINT0(void){ 
     TRISBbits.TRISB7 = 1;
     //Turn on the interrupts
     IEC0bits.INT0IE = 1;
@@ -208,7 +205,7 @@ void setupINT0(void){
     //Turn off the interrupt flags.
     IFS0bits.INT0IF = 0;
 }
-//rear
+//rear -- Initialize the module that measures echo pulses from the rear sensor
 void setupINT1(void){
     TRISBbits.TRISB13 = 1;
     __builtin_write_OSCCONL(OSCCON & 0xbf); // unlock PPS
@@ -223,7 +220,7 @@ void setupINT1(void){
     //Turn off the interrupt flags.
     IFS1bits.INT1IF = 0;
 }
-//front left
+//front left -- Initialize the module that measures echo pulses from the front left sensor
 void setupINT2(void){
     TRISBbits.TRISB10 = 1;
     __builtin_write_OSCCONL(OSCCON & 0xbf); // unlock PPS
@@ -268,14 +265,14 @@ void setOutput_left(){
         microseconds = (beta - alpha)/16; //clock cycles to microseconds rear
     }
     else{
-        microseconds = 10000;
+        microseconds = 10000; //A virtual infinity. Has no meaning beyond making sure that we don't record a "hot" reading
     }
     if(microseconds < AUTOSTOP_DISTANCE && microseconds > NOISE_TOLERANCE){
         //OC2RS = 1000 ;
-        readings[reading_pos] = 1;
+        readings[reading_pos] = 1; //Indicates a "hot" or "too close" event
     }
     else{
-        readings[reading_pos] = 0;
+        readings[reading_pos] = 0; //Indicates a "situation normal" event
     }
     if(microseconds < TURNAWAY_DISTANCE && microseconds > NOISE_TOLERANCE){
         //OC2RS = 1000 ;
@@ -286,21 +283,25 @@ void setOutput_left(){
     }
     //readingVal[reading_pos_short] = microseconds;
     int i = 0;
+    //Sums the values in the buffer
     while(i < 10){
         read_sum += readings[i];
         encroach_sum += farReadings[i];
         i += 1;
     }
     //encroach_avg = (readingVal[0]+readingVal[1]+readingVal[2]+readingVal[3]+readingVal[4])/5;
+    //Condition for "situation normal"
     if(encroach_sum < 7){
         PORTBbits.RB8 = 0;
         turnRight = 0;
        // STOP_LEFT = 0;
     }
+    //Condition for "make a correction"
     else if(read_sum < 7&&encroach_sum >= 7){
         PORTBbits.RB8 = 0;
         turnRight =1;
     }
+    //Condition for "stop"
     else{
         PORTBbits.RB8 = 1;
         stop();
