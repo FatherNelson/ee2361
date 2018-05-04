@@ -69,11 +69,11 @@ void __attribute__((__interrupt__,__auto_psv__)) _T5Interrupt(void){
 void setupOC1(void){
     TRISBbits.TRISB6 = 0;
     AD1PCFG = 0x9fff;
-    T3CONbits.TON = 0; //Turn off the timer to set it up
-    TMR3 = 0;
-    T3CONbits.TCKPS1 = 1;
-    T3CONbits.TCKPS0 = 1;
-    PR3 = TRIG_WIDTH;
+   // T3CONbits.TON = 0; //Turn off the timer to set it up
+   // TMR3 = 0;
+  //  T3CONbits.TCKPS1 = 1;
+  //  T3CONbits.TCKPS0 = 1;
+  //  PR3 = TRIG_WIDTH;
     __builtin_write_OSCCONL(OSCCON & 0xbf); // unlock PPS
     RPOR3bits.RP6R = 18;  // Use Pin RP6 for Output Compare 1 = "18" (Table 10-3)
     __builtin_write_OSCCONL(OSCCON | 0x40); // lock   PPS
