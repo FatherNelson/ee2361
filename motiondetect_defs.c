@@ -10,8 +10,7 @@
 #include "p24Fxxxx.h"
 #include "robot.h"
 #define TRIG_WIDTH 3759 //Value in PR3 for both trigger signals.
-#define TRIG_PAT 3758
-#define TRIG_PAT1 3756
+#define TRIG_PAT 3758 //Duty cycle of OC1. It is one less than TRIG_WIDTH to send the 10uS TTL trigger to the HC-SR04
 #define START 20
 
 
