@@ -475,11 +475,11 @@ long getAvgDistRight(){
 void setup_scan(void){
     CLKDIVbits.RCDIV = 0;
     AD1PCFG = 0x9fff;
-    TRISBbits.TRISB4 = 0;
-    TRISBbits.TRISB7 = 1;
-    TRISBbits.TRISB8 = 0;
-    TRISBbits.TRISB12 = 0;
-    TRISBbits.TRISB13 = 0;
+   // TRISBbits.TRISB4 = 0;
+   // TRISBbits.TRISB7 = 1;
+   // TRISBbits.TRISB8 = 0;
+   // TRISBbits.TRISB12 = 0;
+   // TRISBbits.TRISB13 = 0;
     setupINT0();
     setupINT1();
     setupINT2();
