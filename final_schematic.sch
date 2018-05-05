@@ -2330,7 +2330,7 @@ You are welcome to use this library for commercial purposes. For attribution, we
 <segment>
 <pinref part="N.R." gate="G$1" pin="2"/>
 <wire x1="144.78" y1="154.94" x2="147.32" y2="154.94" width="0.1524" layer="91"/>
-<label x="149.86" y="154.94" size="1.27" layer="95" xref="yes"/>
+<label x="162.56" y="154.94" size="1.27" layer="95" rot="R180" xref="yes"/>
 </segment>
 </net>
 <net name="N$1" class="0">
