@@ -28,8 +28,8 @@ Robot.h
 	This file provides all globally accessible variables and constants to bridge between robo_run and all the individual modules. It is easy to determine that this is the file where all future modules function calls will be stored. By putting motor functions in the header, any file that uses robot.h achieves the ability to make steering calls anywhere. It also grabs the functions that establish ISR’s in the ISR driven program. The individual functions are defined in robot.h. 
 
 Functions:
-	int getFrontStatus(), getBackStatus: These two functions simply return the status of the front or rear sensors as a bool, either “too close” or “normal” in this negative feedback system. Called by functions to determine whether a stop is necessary or not if in help mode.
-	int getTurnRight(), getTurnLeft(): These functions simply return the status of the front left or right sensors as a bool, either close to an obstacle and should turn away or resume typical action. Called by functions to determine whether a turn is best suited to avoid a collision in help mode.
+	int getXStatus(): These two functions simply return the status of the front or rear sensors as a bool, either “too close” or “normal” in this negative feedback system. Called by functions to determine whether a stop is necessary or not if in help mode.
+	int getTurnX(): These functions simply return the status of the front left or right sensors as a bool, either close to an obstacle and should turn away or resume typical action. Called by functions to determine whether a turn is best suited to avoid a collision in help mode.
 	void setUserMode(): Function that puts the robot either in the assisted driving or “master” mode (i.e. if the sensors will change the robot’s direction or not)
 	void setup_uart(), setup_scanner(), setup_motors(): See roborun.c to get a description of these functions. Essentially define pinouts and instantiate interrupts for the interrupt driven system.
 	void right(), left(), forward(), rear() : Exactly as they sound, the basic directions the user can instruct the robot to perform via slip-steering.
